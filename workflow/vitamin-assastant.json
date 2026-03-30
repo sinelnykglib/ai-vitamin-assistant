@@ -1,0 +1,26 @@
+{
+  "name": "Vitamin Assistant Workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "prompt": "={{ $json.input }}"
+      },
+      "name": "AI Response",
+      "type": "n8n-nodes-base.openAi",
+      "position": [450, 300]
+    },
+    {
+      "parameters": {},
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [650, 300]
+    }
+  ]
+}

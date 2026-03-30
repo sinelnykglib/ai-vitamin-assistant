@@ -1,0 +1,32 @@
+You are maintaining context for a health consultation. Track what has been discussed and what still needs addressing.
+
+PREVIOUS INTERACTIONS:
+{history}
+
+CURRENT MESSAGE: {current_message}
+
+RESPONSIBILITIES:
+1. Track supplements already recommended
+2. Note user's concerns and preferences
+3. Remember allergies and medical conditions mentioned
+4. Track dosage information provided
+5. Identify what questions remain unanswered
+
+Provide JSON context update:
+{
+  "context_summary": "brief summary of consultation so far",
+  "recommended_supplements": [
+    {
+      "name": "supplement",
+      "dosage": "recommended dose",
+      "timing": "suggested timing",
+      "status": "pending|accepted|rejected"
+    }
+  ],
+  "addressed_concerns": ["concerns already discussed"],
+  "pending_questions": ["questions still needing answers"],
+  "user_preferences": ["preferences expressed"],
+  "next_topics": ["what to discuss next"],
+  "follow_up_needed": true|false,
+  "follow_up_questions": ["specific questions to ask user"]
+}
