@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitamin Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .chat-area {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.assistant {
+            align-items: flex-start;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .schedule {
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .schedule h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .schedule-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid;
+        }
+
+        .schedule-card.morning {
+            border-left-color: #ffa500;
+        }
+
+        .schedule-card.dinner {
+            border-left-color: #4caf50;
+        }
+
+        .schedule-card.evening {
+            border-left-color: #9c27b0;
+        }
+
+        .schedule-card h4 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .schedule-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .schedule-card li {
+            padding: 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #667eea;
+        }
+
+        .input-area button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .input-area button:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-area button:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Vitamin Assistant</h1>
+            <p> I'm your personal vitamin intake assistant</p>
+        </div>
+
+        <div class="chat-area" id="chatArea">
+            <div class="message assistant">
+                <div class="message-content">
+                    👋 Hello! I'm your personal vitamin intake assistant. 
+                    Ask me which vitamins you should take, and I'll create a personalized schedule!
+                </div>
+                <div class="message-time" id="welcomeTime"></div>
+            </div>
+        </div>
+
+        <div class="schedule" id="schedulePanel" style="display: none;">
+            <h3>📅 Your Intake Schedule</h3>
+            <div class="schedule-grid">
+                <div class="schedule-card morning">
+                    <h4>🌅 Morning</h4>
+                    <ul id="morningList"></ul>
+                </div>
+                <div class="schedule-card dinner">
+                    <h4>🍽️ Dinner</h4>
+                    <ul id="dinnerList"></ul>
+                </div>
+                <div class="schedule-card evening">
+                    <h4>🌙 Evening</h4>
+                    <ul id="eveningList"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="msg" placeholder="Write your question..." onkeypress="handleKeyPress(event)" />
+            <button onclick="send()">Send</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Set welcome message time
+        document.getElementById("welcomeTime").innerText = new Date().toLocaleTimeString();
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                send();
+            }
+        }
+    </script>
+</body>
+</html>
